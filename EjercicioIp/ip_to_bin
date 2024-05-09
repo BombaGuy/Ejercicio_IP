@@ -1,0 +1,112 @@
+#/bin/bash
+
+generar_Secuencia(){
+    local caracter=$1
+    local repeticiones=$2
+    local i=0
+
+    #imprimir x repeticiones el caracter
+    while [[ $i -lt $repeticiones ]]; do
+        #-n para que salga junto
+        echo -n $caracter
+        let "i++"
+    done
+    echo -e
+}
+
+#generar_Secuencia x 6
+
+valid_byte(){
+    if [[ $1 =~ ^[0-9]+$ ]] && [[ $1 -ge 0 ]] && [[ $1 -le 255 ]]; then 
+        return 0
+    else 
+        return 1
+    fi
+}
+
+#valid_byte $1
+
+
+
+
+uint_to_bin(){
+    local int=$1
+    local resultado=""
+
+    #calcular el byte en binario
+    if [[ $int -eq 0 ]]; then
+        resultado=0
+        echo $resultado
+    else 
+        while [[ $int -ge 1 ]]; do
+            #dividir entre 2
+            let "div2= int / 2"
+            #calcular residuo
+            let "residuo = int % 2"
+            #cambiar el valor de int al resultado de div2
+            #añadir al resultado el residuo 
+            int=$div2
+            resultado=$residuo$resultado
+        done
+    echo $resultado
+    fi
+
+}
+#uint_to_bin $1
+
+byte_to_bin(){
+    local byte=$1
+
+    #mirar si el byte es valido
+    if valid_byte $byte; then
+
+        #guardar el binario
+        local binario=$(uint_to_bin $byte)
+        # #coger la longitud
+        local longitud=${#binario}
+
+        #mirar si la longitud es la correcta o no
+        if [[ longitud -le 8 ]]; then 
+            #calcular los 0
+            let "ceros_izq = 8 - longitud"
+            resultado=$(generar_Secuencia 0 $ceros_izq)$binario
+        fi
+    echo $resultado
+    else
+        echo El byte introducido es invalido
+    fi
+}
+
+#byte_to_bin $1
+
+valid_ip(){
+    
+    local direccion_Ip=$1
+    local contador=0
+    echo $direccion_Ip
+    #mirar si hay cuatro bytes
+    if [[ ! $direccion_Ip =~ ^([0-9]{1,3}'.'){3}[0-9]{1,3}$ ]]; then
+        return 1
+    else 
+        local IFS='.'
+        #mirar si cada byte de la ip es valido o no
+        for byte in $direccion_Ip; do
+            #verificar que sea valido
+            if  valid_byte $byte; then
+                let "contador++"
+                local ip_binario+=$(byte_to_bin $byte).
+            else 
+                let "contador--"
+            fi  
+        done
+        if [[ $contador -eq 4 ]]; then 
+            echo $ip_binario | tr ' ' '.' | tail -c +2
+            return 0 
+        else 
+            echo La ip no es valida 
+            return 1 
+        fi
+    fi
+}
+
+valid_ip $1

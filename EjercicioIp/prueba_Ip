@@ -1,0 +1,5 @@
+#/bin/bash
+
+for i in {1..255};do
+    ./ip_to_bin $i
+done
